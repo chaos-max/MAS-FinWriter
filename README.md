@@ -66,7 +66,7 @@ pip install chainlit
    - 脚本默认使用相对路径，数据文件应存放在 `writer/data/` 目录下。
    - 原始研报数据请放入 `writer/data/原始研报数据/`。
 3. **词向量模型**：
-   - 请确保 `writer/研报处理/` 目录下存在 `ChineseEmbedding.bin`（需自己搜集下载） 和 `sgns.financial.bigram-char` 等词向量文件（视具体脚本需求而定）。
+   - 请确保 `writer/研报处理/` 目录下存在 `ChineseEmbedding.bin`（需自己搜集下载） 和 `sgns.financial.bigram-char` 等词向量文件（百度网盘链接已提供）。
 
 ## 3. 配置
 
@@ -107,16 +107,10 @@ chainlit run writer/UI_with_chainlit.py
 启动后，在浏览器中打开显示的 URL。
 1.  在对话框中输入研究主题（或点击示例）。
 2.  系统会提示输入 `decomposition_nums` (查询数量) 和 `url_per_query` (URL数量)。
-3.  智能体团队将开始工作，并在界面上实时展示进度和生成的报告/图表。
-
-## 5. 常见问题与注意事项
-
-*   **ChromeDriver 版本问题**: 项目已集成 `webdriver_manager`，会自动根据您的 Chrome 浏览器版本下载匹配的 ChromeDriver，无需手动配置。
-*   **路径报错**: 如果遇到 `FileNotFoundError`，请确保您是在项目根目录下运行命令。项目已对大部分路径进行了绝对路径适配。
+3.  智能体团队将开始工作，并在界面上实时展示进度和生成的报告。
   
 
-  
-## 6. 输出结果
+## 5. 输出结果
 
 所有生成的研报、图表及中间文件将保存在 `writer/output` 目录下。
 每次运行会根据研究主题生成一个新的文件夹。
