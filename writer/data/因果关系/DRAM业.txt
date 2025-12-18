@@ -1,0 +1,1 @@
+DRAM行业研发1Xnm级工艺制程，导致DDR3、LPDDR3、DDR4、LPDDR4系列DRAM芯片设计和开发推进

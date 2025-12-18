@@ -1,0 +1,77 @@
+{
+    "goal": "\nThe dataset is ['/Users/ash/Desktop/毕业/writer/data/申万行业指数/动力煤.csv', '/Users/ash/Desktop/毕业/writer/data/申万行业指数/焦炭Ⅱ.csv', '/Users/ash/Desktop/毕业/writer/data/申万行业指数/焦炭Ⅲ.csv', '/Users/ash/Desktop/毕业/writer/data/申万行业指数/焦煤.csv', '/Users/ash/Desktop/毕业/writer/data/申万行业指数/煤化工.csv', '/Users/ash/Desktop/毕业/writer/data/申万行业指数/煤炭.csv', '/Users/ash/Desktop/毕业/writer/data/申万行业指数/煤炭开采.csv'], which contains a series of filenames. \nEach file contains historical values for these features ('name', 'trade_date', 'pe', 'pb', 'total_mv') and potentially more information. \nNotice: The 'trade_date' field is in the format YYYYMMDD (e.g., 20240102), and should be converted to a datetime format.\n\nFor each file, extract the following time-related features:\n- Year: Extract the year from the trade date.\n- Month: Extract the month from the trade date.\n- Day: Extract the day of the month from the trade date.\n\nPlot the trend of relevant financial metrics (e.g. 'total_mv', or any other feature available in the file) over 'trade_date' for all files on the same graph.\nThe x-axis should represent 'trade_date', and the y-axis should represent the values of the selected metrics with unit '万元'\nPlease ensure that:\n- The x-axis uses the datetime format.\n- Each file's data is displayed on the same plot, with a different color or style to distinguish them.\n- Include a legend with accurate labels corresponding to each file's name to make sure each file can be identified properly.\n- Set font \"SimHei\". Do not use plt.rcParams to set fonts globally. Load the font file directly via FontProperties, with the font path as:font_path = \"/Library/Fonts/SimHei.ttf\".\n- Use plt.subplots() to create a figure and axis object.\n\nSave the plot under /Users/ash/Desktop/毕业/writer/output/煤业2025/image, and the filename should include \"申万行业指数\". \n**Important Notes:**\nUse fig.savefig() to save the figure.\n",
+    "context": "",
+    "tasks": [
+        {
+            "task_id": "1",
+            "dependent_task_ids": [],
+            "instruction": "Load and preprocess the data from each CSV file, including converting 'trade_date' to datetime format and extracting year, month, and day",
+            "task_type": "data preprocessing",
+            "code": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom matplotlib.font_manager import FontProperties\nimport os\n\n# Define font\nfont_path = \"/Library/Fonts/SimHei.ttf\"\nfont_prop = FontProperties(fname=font_path)\n\n# List of files to process\nfile_paths = [\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/动力煤.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/焦炭Ⅱ.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/焦炭Ⅲ.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/焦煤.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/煤化工.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/煤炭.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/煤炭开采.csv'\n]\n\n# Create a figure and axis object\nfig, ax = plt.subplots(figsize=(12, 8))\n\n# Process each file\nfor file_path in file_paths:\n    # Read the CSV file\n    df = pd.read_csv(file_path)\n    \n    # Make a copy of the dataframe\n    df_processed = df.copy()\n    \n    # Convert trade_date to datetime\n    df_processed['trade_date'] = pd.to_datetime(df_processed['trade_date'], format='%Y%m%d')\n    \n    # Extract time features\n    df_processed['year'] = df_processed['trade_date'].dt.year\n    df_processed['month'] = df_processed['trade_date'].dt.month\n    df_processed['day'] = df_processed['trade_date'].dt.day\n    \n    # Get the base filename for legend\n    filename = os.path.basename(file_path).replace('.csv', '')\n    \n    # Plot total_mv over time\n    ax.plot(df_processed['trade_date'], df_processed['total_mv'], label=filename)\n\n# Configure plot\nax.set_xlabel('交易日期', fontproperties=font_prop)\nax.set_ylabel('总市值 (万元)', fontproperties=font_prop)\nax.set_title('申万行业指数 - 煤业相关行业总市值趋势', fontproperties=font_prop)\nax.legend(prop=font_prop)\nax.grid(True)\n\n# Create output directory if not exists\noutput_dir = '/Users/ash/Desktop/毕业/writer/output/煤业2025/image'\nos.makedirs(output_dir, exist_ok=True)\n\n# Save the figure\noutput_path = os.path.join(output_dir, '申万行业指数_煤业总市值趋势.png')\nfig.savefig(output_path, bbox_inches='tight')\nplt.close()\n\nprint(f\"Plot saved to: {output_path}\")\n",
+            "result": "Plot saved to: /Users/ash/Desktop/毕业/writer/output/煤业2025/image/申万行业指数_煤业总市值趋势.png\n",
+            "is_success": true,
+            "is_finished": true
+        },
+        {
+            "task_id": "2",
+            "dependent_task_ids": [
+                "1"
+            ],
+            "instruction": "Create a plot showing the trend of 'total_mv' over 'trade_date' for all files, with proper formatting and legend",
+            "task_type": "eda",
+            "code": "import numpy as np\n\n# Check data types and basic statistics for one of the files (using the first file as example)\ndf = pd.read_csv(file_paths[0])\ndf['trade_date'] = pd.to_datetime(df['trade_date'], format='%Y%m%d')\n\nprint(\"Data types:\")\nprint(df.dtypes)\n\nprint(\"\\nNumeric columns statistics:\")\nnumeric_cols = df.select_dtypes(include=[np.number])\nprint(numeric_cols.describe())\n\nprint(\"\\nCorrelation matrix for numeric columns:\")\ncorr_matrix = numeric_cols.corr()\nprint(corr_matrix)\n\n# Visualize correlation matrix\nfig, ax = plt.subplots(figsize=(8, 6))\ncax = ax.matshow(corr_matrix, cmap='coolwarm')\nfig.colorbar(cax)\nax.set_xticks(range(len(corr_matrix.columns)))\nax.set_yticks(range(len(corr_matrix.columns)))\nax.set_xticklabels(corr_matrix.columns, rotation=45, fontproperties=font_prop)\nax.set_yticklabels(corr_matrix.columns, fontproperties=font_prop)\nax.set_title('数值型特征相关性矩阵', fontproperties=font_prop)\nplt.show()\n",
+            "result": "Data types:\nname                  object\ntrade_date    datetime64[ns]\npe                   float64\npb                   float64\nfloat_mv             float64\ntotal_mv             float64\ndtype: object\n\nNumeric columns statistics:\n               pe          pb      float_mv      total_mv\ncount  268.000000  268.000000  2.680000e+02  2.680000e+02\nmean    11.760187    1.788507  2.984792e+07  1.332182e+08\nstd      8.268827    0.110562  2.477136e+06  7.715145e+06\nmin      9.100000    1.580000  2.654063e+06  1.140555e+08\n25%     10.690000    1.700000  2.868424e+07  1.285338e+08\n50%     11.305000    1.790000  2.998582e+07  1.339103e+08\n75%     11.882500    1.880000  3.109630e+07  1.377203e+08\nmax    145.850000    2.020000  3.405668e+07  1.501780e+08\n\nCorrelation matrix for numeric columns:\n                pe        pb  float_mv  total_mv\npe        1.000000  0.133554 -0.597504  0.212060\npb        0.133554  1.000000  0.504729  0.783108\nfloat_mv -0.597504  0.504729  1.000000  0.650075\ntotal_mv  0.212060  0.783108  0.650075  1.000000\n,",
+            "is_success": true,
+            "is_finished": true
+        },
+        {
+            "task_id": "3",
+            "dependent_task_ids": [
+                "2"
+            ],
+            "instruction": "Save the plot to the specified directory with the filename including '申万行业指数'",
+            "task_type": "other",
+            "code": "# Verify the plot was saved correctly\nimport os\noutput_path = '/Users/ash/Desktop/毕业/writer/output/煤业2025/image/申万行业指数_煤业总市值趋势.png'\nif os.path.exists(output_path):\n    print(f\"Plot successfully saved at: {output_path}\")\n    print(f\"File size: {os.path.getsize(output_path)/1024:.2f} KB\")\nelse:\n    print(\"Warning: Plot file not found at the specified location\")\n",
+            "result": "Plot successfully saved at: /Users/ash/Desktop/毕业/writer/output/煤业2025/image/申万行业指数_煤业总市值趋势.png\nFile size: 111.58 KB\n",
+            "is_success": true,
+            "is_finished": true
+        }
+    ],
+    "task_map": {
+        "1": {
+            "task_id": "1",
+            "dependent_task_ids": [],
+            "instruction": "Load and preprocess the data from each CSV file, including converting 'trade_date' to datetime format and extracting year, month, and day",
+            "task_type": "data preprocessing",
+            "code": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom matplotlib.font_manager import FontProperties\nimport os\n\n# Define font\nfont_path = \"/Library/Fonts/SimHei.ttf\"\nfont_prop = FontProperties(fname=font_path)\n\n# List of files to process\nfile_paths = [\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/动力煤.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/焦炭Ⅱ.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/焦炭Ⅲ.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/焦煤.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/煤化工.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/煤炭.csv',\n    '/Users/ash/Desktop/毕业/writer/data/申万行业指数/煤炭开采.csv'\n]\n\n# Create a figure and axis object\nfig, ax = plt.subplots(figsize=(12, 8))\n\n# Process each file\nfor file_path in file_paths:\n    # Read the CSV file\n    df = pd.read_csv(file_path)\n    \n    # Make a copy of the dataframe\n    df_processed = df.copy()\n    \n    # Convert trade_date to datetime\n    df_processed['trade_date'] = pd.to_datetime(df_processed['trade_date'], format='%Y%m%d')\n    \n    # Extract time features\n    df_processed['year'] = df_processed['trade_date'].dt.year\n    df_processed['month'] = df_processed['trade_date'].dt.month\n    df_processed['day'] = df_processed['trade_date'].dt.day\n    \n    # Get the base filename for legend\n    filename = os.path.basename(file_path).replace('.csv', '')\n    \n    # Plot total_mv over time\n    ax.plot(df_processed['trade_date'], df_processed['total_mv'], label=filename)\n\n# Configure plot\nax.set_xlabel('交易日期', fontproperties=font_prop)\nax.set_ylabel('总市值 (万元)', fontproperties=font_prop)\nax.set_title('申万行业指数 - 煤业相关行业总市值趋势', fontproperties=font_prop)\nax.legend(prop=font_prop)\nax.grid(True)\n\n# Create output directory if not exists\noutput_dir = '/Users/ash/Desktop/毕业/writer/output/煤业2025/image'\nos.makedirs(output_dir, exist_ok=True)\n\n# Save the figure\noutput_path = os.path.join(output_dir, '申万行业指数_煤业总市值趋势.png')\nfig.savefig(output_path, bbox_inches='tight')\nplt.close()\n\nprint(f\"Plot saved to: {output_path}\")\n",
+            "result": "Plot saved to: /Users/ash/Desktop/毕业/writer/output/煤业2025/image/申万行业指数_煤业总市值趋势.png\n",
+            "is_success": true,
+            "is_finished": true
+        },
+        "2": {
+            "task_id": "2",
+            "dependent_task_ids": [
+                "1"
+            ],
+            "instruction": "Create a plot showing the trend of 'total_mv' over 'trade_date' for all files, with proper formatting and legend",
+            "task_type": "eda",
+            "code": "import numpy as np\n\n# Check data types and basic statistics for one of the files (using the first file as example)\ndf = pd.read_csv(file_paths[0])\ndf['trade_date'] = pd.to_datetime(df['trade_date'], format='%Y%m%d')\n\nprint(\"Data types:\")\nprint(df.dtypes)\n\nprint(\"\\nNumeric columns statistics:\")\nnumeric_cols = df.select_dtypes(include=[np.number])\nprint(numeric_cols.describe())\n\nprint(\"\\nCorrelation matrix for numeric columns:\")\ncorr_matrix = numeric_cols.corr()\nprint(corr_matrix)\n\n# Visualize correlation matrix\nfig, ax = plt.subplots(figsize=(8, 6))\ncax = ax.matshow(corr_matrix, cmap='coolwarm')\nfig.colorbar(cax)\nax.set_xticks(range(len(corr_matrix.columns)))\nax.set_yticks(range(len(corr_matrix.columns)))\nax.set_xticklabels(corr_matrix.columns, rotation=45, fontproperties=font_prop)\nax.set_yticklabels(corr_matrix.columns, fontproperties=font_prop)\nax.set_title('数值型特征相关性矩阵', fontproperties=font_prop)\nplt.show()\n",
+            "result": "Data types:\nname                  object\ntrade_date    datetime64[ns]\npe                   float64\npb                   float64\nfloat_mv             float64\ntotal_mv             float64\ndtype: object\n\nNumeric columns statistics:\n               pe          pb      float_mv      total_mv\ncount  268.000000  268.000000  2.680000e+02  2.680000e+02\nmean    11.760187    1.788507  2.984792e+07  1.332182e+08\nstd      8.268827    0.110562  2.477136e+06  7.715145e+06\nmin      9.100000    1.580000  2.654063e+06  1.140555e+08\n25%     10.690000    1.700000  2.868424e+07  1.285338e+08\n50%     11.305000    1.790000  2.998582e+07  1.339103e+08\n75%     11.882500    1.880000  3.109630e+07  1.377203e+08\nmax    145.850000    2.020000  3.405668e+07  1.501780e+08\n\nCorrelation matrix for numeric columns:\n                pe        pb  float_mv  total_mv\npe        1.000000  0.133554 -0.597504  0.212060\npb        0.133554  1.000000  0.504729  0.783108\nfloat_mv -0.597504  0.504729  1.000000  0.650075\ntotal_mv  0.212060  0.783108  0.650075  1.000000\n,",
+            "is_success": true,
+            "is_finished": true
+        },
+        "3": {
+            "task_id": "3",
+            "dependent_task_ids": [
+                "2"
+            ],
+            "instruction": "Save the plot to the specified directory with the filename including '申万行业指数'",
+            "task_type": "other",
+            "code": "# Verify the plot was saved correctly\nimport os\noutput_path = '/Users/ash/Desktop/毕业/writer/output/煤业2025/image/申万行业指数_煤业总市值趋势.png'\nif os.path.exists(output_path):\n    print(f\"Plot successfully saved at: {output_path}\")\n    print(f\"File size: {os.path.getsize(output_path)/1024:.2f} KB\")\nelse:\n    print(\"Warning: Plot file not found at the specified location\")\n",
+            "result": "Plot successfully saved at: /Users/ash/Desktop/毕业/writer/output/煤业2025/image/申万行业指数_煤业总市值趋势.png\nFile size: 111.58 KB\n",
+            "is_success": true,
+            "is_finished": true
+        }
+    },
+    "current_task_id": ""
+}

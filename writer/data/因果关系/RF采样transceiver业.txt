@@ -1,0 +1,1 @@
+ADC除了要求在性能上相比4G有大幅提升外，还需与DAC、CLOCK等芯片集成，从而构成RF采样transceiver以减小系统尺寸

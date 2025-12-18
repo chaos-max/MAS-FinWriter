@@ -1,0 +1,28 @@
+# Ignore Gensim word vector files
+*.bigram-char
+*.gensim.vectors.npy
+
+
+# Ignore Python cache and environment
+__pycache__/
+*.pyc
+.env
+.venv
+venv/
+
+# Ignore IDE settings
+.vscode/
+.idea/
+.DS_Store
+
+
+# Ignore output data
+**/writer/output/
+**/workspace/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
